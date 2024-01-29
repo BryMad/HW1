@@ -81,7 +81,7 @@ AstroPlusPlus {
                 | while Exp Block                               --while
                 | IfStmt
                 | break ";"                                     --break         
-    IfStmt 		=  if Exp Block (else (Block | IfStmt))?        --if
+    IfStmt 		   =  if Exp Block (else (Block | IfStmt))?        --if
     Block       = "{" Statement* "}"
     Exp         = Comp ("<="|"<"| ">="|">"| "=="| "!=") Comp    --binary
                 | Comp
@@ -103,7 +103,7 @@ AstroPlusPlus {
     id          = ~print letter idchar*
     space       += "//" (~"\n" any)*                            --comment
     while       = "while" ~alnum
-    if 			= "if" ~alnum
-    else 		= "else" ~alnum
+    if 			      = "if" ~alnum
+    else 		     = "else" ~alnum
     break       = "break" ~alnum
 }
