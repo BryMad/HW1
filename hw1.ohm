@@ -1,0 +1,109 @@
+// Author: Bryan Madole
+// CMSI 3802 - HW1 Ohm questions
+ 
+/* 
+5) For each scenario below, give Ohm grammar rules for Exp, Term, Factor, and Primary that make the expression -2**2:
+a) Evaluate to 4.
+*/
+
+
+Duck {
+    Program     = Stmt+
+    Stmt        = PrintStmt
+    PrintStmt   = "quack" Exp
+    Exp         = Exp ("+" | "-") Term              --plus
+                | Term
+    Term        = Term ("*" | "/" | "%") Factor     --mul
+                | Factor
+    Factor      = Primary "**" Factor               --exp
+                | Primary
+    Primary     = "-"? num                          --basic
+                | "(" Exp ")"                       --parens
+    num         = digit+ ("." digit+)? (("e" | "E") ("+" | "-")? digit+)? 
+}
+
+
+
+// b) Evaluate to -4.
+
+Duck {
+    Program     = Stmt+
+    Stmt        = PrintStmt
+    PrintStmt   = "quack" Exp
+    Exp         = Exp ("+" | "-") Term              --plus
+                | Term
+    Term        = Term ("*" | "/" | "%") Factor     --mul
+                | Factor
+    Factor      = "-" Factor                        --neg
+                | Primary "**" Factor               --exp
+                | Primary
+    Primary     = num                               --basic
+                | "(" Exp ")"                       --parens
+    num         = digit+ ("." digit+)? (("e" | "E") ("+" | "-")? digit+)? 
+}
+
+
+// c) Be a syntax error, while allowing (-2)**2 and -(2**2) to be legal.
+
+Duck {
+    Program     = Stmt+
+    Stmt        = PrintStmt
+    PrintStmt   = "quack" Exp
+    Exp         = Exp ("+" | "-") Term              --plus
+                | Term
+    Term        = Term ("*" | "/" | "%") Factor     --mul
+                | Factor
+    Factor      = Primary "**" Factor               --binary
+                | "-" Primary                       --negation
+                | Primary
+    Primary     = num                               --basic
+                | "(" Exp ")"                       --parens
+    num         = digit+ ("." digit+)? (("e" | "E") ("+" | "-")? digit+)? 
+}
+
+/* 
+6) Astro is a really tiny language, so we'd like to make Astro++. This new language adds 
+an if-statement, a while statement, a break statement, and relational operators. The 
+while statement should start with the keyword while, followed by a test expression, 
+followed by a block (a curly-brace delimited sequence of statements). The if-statement 
+should start with the keyword if, followed by a test expression, then a block, then an 
+optional else-part which is the keyword else followed by either a block or another if-statement. 
+Neither the while statement nor the if statement should end with a semicolon. The break 
+statement is only allowed to appear in a while statement’s block. The relational operators 
+are the same as those in Python and are to be NON-associative. All of the relational 
+operators are on the same precedence level, lower than all other operators. Give the syntax of Astro++ using Ohm.
+*/
+
+AstroPlusPlus {
+    Program     = Statement+
+    Statement   = id "=" Exp ";"                                --assignment
+                | print Exp ";"                                 --print
+                | while Exp Block                               --while
+                | IfStmt
+                | break ";"                                     --break         
+    IfStmt 		=  if Exp Block (else (Block | IfStmt))?        --if
+    Block       = "{" Statement* "}"
+    Exp         = Comp ("<="|"<"| ">="|">"| "=="| "!=") Comp    --binary
+                | Comp
+    Comp        = Comp ("+" | "-") Term                         --binary
+                | Term
+    Term        = Term ("*" | "/" | "%") Factor                 --binary
+                | Factor
+    Factor      = Primary "**" Factor                           --binary
+                | "-" Primary                                   --negation
+                | Primary
+    Primary     = id "(" ListOf<Exp, ","> ")"                   --call
+                | numeral                                       --num
+                | id                                            --id
+                | "(" Exp ")"                                   --parens
+
+    numeral     = digit+ ("." digit+)? (("E" | "e") ("+" | "-")? digit+)?
+    print       = "print" ~idchar
+    idchar      = letter | digit | "_"
+    id          = ~print letter idchar*
+    space       += "//" (~"\n" any)*                            --comment
+    while       = "while" ~alnum
+    if 			= "if" ~alnum
+    else 		= "else" ~alnum
+    break       = "break" ~alnum
+}
